@@ -2,10 +2,6 @@ const activeSheet = SpreadsheetApp.getActiveSpreadsheet()!;
 
 type Data = { name: string; row: number; date: Date };
 
-function test(value: string | number | Date, num = 37) {
-  activeSheet.getRange(`G${num}`).setValue(value);
-}
-
 function getDate() {
   const date = new Date();
   date.setMinutes(0);
