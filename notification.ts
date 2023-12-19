@@ -17,21 +17,13 @@ function getAssignees() {
 }
 
 function createMessage(assignees: string[]) {
-  // return `
-  // <@here>
-  // 本日G会あります！
-  // ****************************
-  // 本日のG会のナレシェア担当者は
-  // ${assignees.join('・')}
-  // です！よろしくお願いします！
-  // ****************************
-  // `.trim();
-  // test
   return `
+  <@here>
+  本日G会あります！
   ****************************
-  これはテストです。
+  本日のG会のナレシェア担当者は
   ${assignees.join('・')}
-  どうぞよろしくお願いします。
+  です！よろしくお願いします！
   ****************************
   `.trim();
 }
@@ -47,16 +39,24 @@ function postToSlack(text: string) {
   });
 }
 
-const isHoldMeeting = () => {
+function isHoldMeeting() {
   const { meetingTitle } = GLOBAL_SETTINGS;
   const calendar = CalendarApp.getCalendarById(MAIL_ADDRESS);
   const todaysEvents = calendar.getEventsForDay(new Date());
   return todaysEvents.some((event) => event.getTitle().includes(meetingTitle));
-};
+}
 
 function notification() {
-  if (!SLACK_API_TOKEN || !MAIL_ADDRESS) throw new Error('SLACK_API_TOKEN or MAIL_ADDRESS is not defined');
-  if (!isHoldMeeting) return;
+  if (!SLACK_API_TOKEN || !MAIL_ADDRESS) {
+    throw new Error('SLACK_API_TOKEN or MAIL_ADDRESS is not defined');
+  }
+
+  const isMeeting = isHoldMeeting();
+  if (!isMeeting) {
+    Logger.log('本日は開催日ではありません');
+    return;
+  }
+
   const assignees = getAssignees();
   const message = createMessage(assignees);
   postToSlack(message);
