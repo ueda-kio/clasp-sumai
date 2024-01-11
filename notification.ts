@@ -18,7 +18,7 @@ function getAssignees() {
 
 function createMessage(assignees: string[]) {
   return `
-  <@here>
+  <!here>
   本日G会あります！
   ****************************
   本日のG会のナレシェア担当者は
