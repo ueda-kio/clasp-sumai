@@ -1,6 +1,7 @@
 const GLOBAL_SETTINGS = {
   nameColumn: 'I', // メンバーの名前が入っている列
-  assigneeColumn: 'K', // 今日の担当者に★をつける列
+  facilitatorColumn: 'J', // ファシリテーターに★をつける列
+  assigneeColumn: 'K', // ナレシェア担当者に★をつける列
   dateColumn: 'L', // 最後に担当した日付が入っている列
   startRow: 14, // 一人目のメンバーの行
   channelId: 'C04ERSPG47Q', // general
