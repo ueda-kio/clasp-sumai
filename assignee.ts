@@ -1,3 +1,4 @@
+// ***「担当者決めボタン」を押すとナレシェア担当者を2名抽選するスクリプト ***
 const activeSheet = SpreadsheetApp.getActiveSpreadsheet()!;
 
 type Data = { name: string; row: number; date: Date };

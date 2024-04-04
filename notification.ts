@@ -1,8 +1,24 @@
+// *** bot送信用スクリプト ***
 const settingSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('G会進行担当')!;
 const SLACK_API_TOKEN = PropertiesService.getScriptProperties().getProperty('SLACK_API_TOKEN')!;
 //! MEMO: 離任時にスクリプトプロパティを変更すること
 const MAIL_ADDRESS = PropertiesService.getScriptProperties().getProperty('MAIL_ADDRESS')!;
 
+/** ファシリ担当者を取得する */
+function getFacilitator() {
+  const { startRow, nameColumn, facilitatorColumn } = GLOBAL_SETTINGS;
+  const endRow = settingSheet.getLastRow();
+  const dataList = settingSheet.getRange(`${nameColumn}${startRow}:${facilitatorColumn}${endRow}`).getValues();
+  const facilitator = dataList
+    .map((data) => {
+      const [name, facilitator] = data;
+      return facilitator ? (name as string) : false;
+    })
+    .filter((name): name is Exclude<typeof name, false> => typeof name === 'string');
+  return facilitator;
+}
+
+/** ナレシェア担当者を取得する */
 function getAssignees() {
   const { startRow, nameColumn, assigneeColumn } = GLOBAL_SETTINGS;
   const endRow = settingSheet.getLastRow();
@@ -16,18 +32,21 @@ function getAssignees() {
   return assignees;
 }
 
-function createMessage(assignees: string[]) {
+/** slackに送信するメッセージを生成する */
+function createMessage(facilitator: string[], assignees: string[]) {
   return `
   <!here>
   本日G会あります！
   ****************************
-  本日のG会のナレシェア担当者は
-  ${assignees.join('・')}
+  本日のG会の担当者は...
+  ・ファシリ: ${facilitator.join('・')}
+  ・ナレシェア: ${assignees.join('・')}
   です！よろしくお願いします！
   ****************************
   `.trim();
 }
 
+/** slackにメッセージを送信する */
 function postToSlack(text: string) {
   const { channelId } = GLOBAL_SETTINGS;
   UrlFetchApp.fetch('https://slack.com/api/chat.postMessage', {
@@ -39,6 +58,7 @@ function postToSlack(text: string) {
   });
 }
 
+/** G会の開催日かどうか判定する */
 function isHoldMeeting() {
   const { meetingTitle } = GLOBAL_SETTINGS;
   const calendar = CalendarApp.getCalendarById(MAIL_ADDRESS);
@@ -57,7 +77,8 @@ function notification() {
     return;
   }
 
+  const facilitator = getFacilitator();
   const assignees = getAssignees();
-  const message = createMessage(assignees);
+  const message = createMessage(facilitator, assignees);
   postToSlack(message);
 }
