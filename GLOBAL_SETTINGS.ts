@@ -8,5 +8,4 @@ const GLOBAL_SETTINGS = {
 
   // ここからtest
   // channelId: 'C06AAQ34DK5', // botお試しチャンネル
-  // meetingTitle: 'DSU朝会',
 } as const;
